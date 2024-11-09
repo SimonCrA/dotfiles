@@ -1,3 +1,4 @@
+-- vertical line for object, arrays, functions...
 return {
 	"lukas-reineke/indent-blankline.nvim",
 	main = "ibl",

@@ -1,4 +1,5 @@
-return { -- Autocompletion
+-- Autocompletion
+return {
 	"hrsh7th/nvim-cmp",
 	dependencies = {
 		-- Snippet Engine & its associated nvim-cmp source
