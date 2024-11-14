@@ -18,7 +18,10 @@ return {
 				"stylua", -- lua formatter
 				"eslint_d", -- ts/js linter
 				"shfmt",
-				-- 'ruff',
+				-- "ruff",
+				"gofumpt",
+				"golines",
+				"goimports_reviser",
 			},
 			-- auto-install configured formatters & linters (with null-ls)
 			automatic_installation = true,
@@ -32,6 +35,9 @@ return {
 			formatting.terraform_fmt,
 			require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
 			require("none-ls.formatting.ruff_format"),
+			formatting.gofumpt,
+			formatting.goimports_reviser,
+			formatting.golines,
 		}
 
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
