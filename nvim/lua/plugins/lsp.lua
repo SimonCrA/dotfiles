@@ -9,9 +9,10 @@ return {
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		-- Useful status updates for LSP.
 		-- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-		{ "j-hui/fidget.nvim",       opts = {} },
+		{ "j-hui/fidget.nvim", opts = {} },
 		-- Allows extra capabilities provided by nvim-cmp
 		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/nvim-cmp",
 	},
 	config = function()
 		-- Brief aside: **What is LSP?**
@@ -120,13 +121,13 @@ return {
 			end,
 		})
 		-- Change diagnostic symbols in the sign column (gutter)
-		-- if vim.g.have_nerd_font then
-		--   local signs = { Error = '', Warn = '', Hint = '', Info = '' }
-		--   for type, icon in pairs(signs) do
-		--     local hl = 'DiagnosticSign' .. type
-		--     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-		--   end
-		-- end
+		if vim.g.have_nerd_font then
+			local signs = { Error = "", Warn = "", Hint = "", Info = "" }
+			for type, icon in pairs(signs) do
+				local hl = "DiagnosticSign" .. type
+				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+			end
+		end
 		-- LSP servers and clients are able to communicate to each other what features they support.
 		--  By default, Neovim doesn't support everything that is in the LSP specification.
 		--  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -143,23 +144,6 @@ return {
 		--  - settings (table): Override the default settings passed when initializing the server.
 		--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 		local servers = {
-			-- clangd = {},
-			gopls = {
-				settings = {
-					completeUnimported = true,
-					usePlaceholders = true,
-				},
-			},
-			-- pyright = {},
-			-- rust_analyzer = {},
-			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-			--
-			-- Some languages (like typescript) have entire language plugins that can be useful:
-			--    https://github.com/pmizio/typescript-tools.nvim
-			--
-			-- But for many setups, the LSP (`ts_ls`) will work just fine
-			-- ts_ls = {},
-			--
 			lua_ls = {
 				-- cmd = {...},
 				-- filetypes = { ...},
@@ -186,6 +170,23 @@ return {
 					},
 				},
 			},
+			ts_ls = {},
+			gopls = {
+				settings = {
+					completeUnimported = true,
+					usePlaceholders = true,
+				},
+			},
+			-- clangd = {},
+			-- pyright = {},
+			-- rust_analyzer = {},
+			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+			--
+			-- Some languages (like typescript) have entire language plugins that can be useful:
+			--    https://github.com/pmizio/typescript-tools.nvim
+			--
+			-- But for many setups, the LSP (`ts_ls`) will work just fine
+			--
 		}
 		-- Ensure the servers and tools above are installed
 		--  To check the current status of installed tools and/or manually install
@@ -211,6 +212,22 @@ return {
 					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
 					require("lspconfig")[server_name].setup(server)
 				end,
+			},
+		})
+
+		-- Setup nvim-cmp for autocompletion
+		local cmp = require("cmp")
+
+		cmp.setup({
+			mapping = {
+				["<CR>"] = cmp.mapping.confirm({ select = true }),
+				["<Tab>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+				["<S-Tab>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+			},
+			sources = {
+				{ name = "nvim_lsp" },
+				{ name = "buffer" },
+				{ name = "path" },
 			},
 		})
 	end,
